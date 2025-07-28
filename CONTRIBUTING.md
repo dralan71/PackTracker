@@ -35,7 +35,7 @@ Thank you for considering contributing! Please read the following guidelines bef
 ### Coding Standards
 
 - Follow existing code style (TypeScript, React, CSS modules).  
-- Run `npm run lint` and `npm run build` before submitting.  
+- Run `npm run lint` and `npm run test` before submitting.  
 - Write clear, descriptive commit messages (see [Conventional Commits](https://www.conventionalcommits.org/)).
 
 ### Branch Naming

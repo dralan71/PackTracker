@@ -6,8 +6,15 @@ import Footer from './components/Footer.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
-    <div style={{ height: '60px' }} /> {/* Reserve space for footer */}
-    <Footer />
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      width: '100vw',
+      boxSizing: 'border-box',
+    }}>
+      <App />
+      <Footer />
+    </div>
   </StrictMode>,
 )

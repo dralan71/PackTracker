@@ -16,7 +16,7 @@ import "./App.css";
 const STORAGE_KEY = "luggage-tracker-data";
 const SESSION_STORAGE_KEY = "luggage-tracker-session-data";
 
-function isValidBaggageArray(data: any): data is Baggage[] {
+function isValidBaggageArray(data: unknown): data is Baggage[] {
   if (!Array.isArray(data)) return false;
   return data.every(
     (bag) =>
@@ -102,7 +102,7 @@ function App() {
         console.error("Failed to save collapsed state to sessionStorage:", error);
       }
     }
-  }, [collapsedMap]);
+  }, [collapsedMap, isLoaded]);
 
   const addBaggage = (type: BaggageType) => {
     const newBaggage: Baggage = {
@@ -163,7 +163,17 @@ function App() {
   };
 
   const exportToCSV = () => {
-    const csvData: any[] = [];
+    interface CSVRow {
+      baggageId: string;
+      itemIcon: string;
+      baggageType: string;
+      baggageNickname: string;
+      itemName: string;
+      quantity: number;
+      packed: boolean;
+    }
+    
+    const csvData: CSVRow[] = [];
 
     baggages.forEach((baggage) => {
       baggage.items.forEach((item) => {
@@ -201,15 +211,25 @@ function App() {
     Papa.parse(file, {
       header: true,
       complete: (results) => {
+        interface CSVRow {
+          baggageId?: string;
+          itemIcon?: string;
+          baggageType?: string;
+          baggageNickname?: string;
+          itemName?: string;
+          quantity?: string;
+          packed?: string;
+        }
+        
         const importedBaggages: { [key: string]: Baggage } = {};
 
-        results.data.forEach((row: any) => {
+        (results.data as CSVRow[]).forEach((row) => {
           if (!row.baggageId) return;
 
           if (!importedBaggages[row.baggageId]) {
             importedBaggages[row.baggageId] = {
               id: row.baggageId,
-              type: row.baggageType,
+              type: (row.baggageType as BaggageType) || "other",
               nickname: row.baggageNickname || "",
               items: [],
             };
@@ -220,7 +240,7 @@ function App() {
               id: Date.now().toString() + Math.random(),
               name: row.itemName,
               icon: row.itemIcon || "cube",
-              quantity: parseInt(row.quantity) || 1,
+              quantity: parseInt(row.quantity || "1") || 1,
               packed: row.packed === "true",
             });
           }

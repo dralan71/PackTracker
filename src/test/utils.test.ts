@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { type Item} from '../types' 
 
 // Test the data validation function from App.tsx
 function isValidBaggageArray(data: unknown): boolean {
@@ -10,7 +11,7 @@ function isValidBaggageArray(data: unknown): boolean {
       typeof bag.nickname === 'string' &&
       Array.isArray(bag.items) &&
       bag.items.every(
-        (item: any) =>
+        (item: Item) =>
           typeof item.id === 'string' &&
           typeof item.name === 'string' &&
           typeof item.icon === 'string' &&

@@ -19,7 +19,7 @@ A lightweight, client-side React/Vite app to help you organize and track what’
 
 ## Tech Stack
 
-- React 18.x + TypeScript
+- React 19.x + TypeScript
 - Vite
 - React Hot Toast (notifications)
 - Ionicons (icon library)

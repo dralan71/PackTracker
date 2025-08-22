@@ -31,9 +31,16 @@ export const toastConfig = {
   },
 };
 
-// Helper function to get icon component
-const getIconComponent = (iconName: string) => {
-  return iconMap[iconName] || iconMap["PiCube"];
+// Helper function to get styled icon component
+const getStyledIconComponent = (iconName: string) => {
+  const IconComponent = iconMap[iconName] || iconMap["PiCube"];
+  
+  // React icons accept standard SVG props including style and color
+  return React.createElement(IconComponent, {
+    style: { color: '#27ae60' },
+    // Alternative: you can also use the color prop directly
+    // color: '#27ae60'
+  } as React.ComponentProps<typeof IconComponent>);
 };
 
 // Custom toast functions with icons
@@ -53,18 +60,18 @@ export const customToast = {
   },
 
   addItem: (itemName: string, itemIcon: string) => {
-    const IconComponent = getIconComponent(itemIcon);
+    const styledIcon = getStyledIconComponent(itemIcon);
     return toast.success(`Added item: '${itemName}'`, {
       ...toastConfig.success,
-      icon: React.createElement(IconComponent),
+      icon: styledIcon,
     });
   },
 
   increaseQuantity: (itemName: string, itemIcon: string) => {
-    const IconComponent = getIconComponent(itemIcon);
+    const styledIcon = getStyledIconComponent(itemIcon);
     return toast.success(`Increased quantity of '${itemName}'`, {
       ...toastConfig.success,
-      icon: React.createElement(IconComponent),
+      icon: styledIcon,
     });
   },
 

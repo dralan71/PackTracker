@@ -3,30 +3,35 @@ import { PiTrash, PiSuitcase, PiCheckCircle, PiXCircle } from "react-icons/pi";
 import { iconMap } from "./iconMap";
 import React from "react";
 
-// Custom toast configuration with dark theme
+// Simple dark-mode resolver based on user media preference. This keeps the
+// behavior lightweight: JS chooses colors at runtime using a ternary.
+const darkMode = typeof window !== 'undefined' &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(prefers-color-scheme: dark)').matches;
+
 export const toastConfig = {
   style: {
     borderRadius: '10px',
-    background: '#2a2a2a',
-    color: '#fff',
-    border: '1px solid #444',
+    background: darkMode ? '#2a2a2a' : '#ffffff',
+    color: darkMode ? '#fff' : '#222222',
+    border: darkMode ? '1px solid #444' : '1px solid #e6e6e6',
     fontSize: '14px',
     padding: '12px 16px',
   },
   success: {
     style: {
       borderRadius: '10px',
-      background: '#2a2a2a',
-      color: '#fff',
-      border: '1px solid #555',
+      background: darkMode ? '#2a2a2a' : '#fff',
+      color: darkMode ? '#fff' : '##222',
+      border: darkMode ? '1px solid #555' : '1px solid #dff3e6',
     },
   },
   error: {
     style: {
       borderRadius: '10px',
-      background: '#2a2a2a',
-      color: '#fff',
-      border: '1px solid #e74c3c',
+      background: darkMode ? '#2a2a2a' : '#fff6f6',
+      color: darkMode ? '#fff' : '#3b0d0d',
+      border: darkMode ? '1px solid #e74c3c' : '1px solid #f5c6c6',
     },
   },
 };

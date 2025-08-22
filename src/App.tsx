@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import { Toaster } from "react-hot-toast";
 import {
   PiAirplane,
   PiCloudArrowUp,
@@ -10,6 +11,7 @@ import {
 import { type Baggage, type BaggageType, type Item } from "./types";
 import BaggageCard from "./components/BaggageCard";
 import { DEFAULT_ITEMS } from "./data/defaultItems";
+import { customToast, toastConfig } from "./ToastContext";
 import Papa from "papaparse";
 import "./App.css";
 
@@ -113,6 +115,7 @@ function App() {
     };
     setBaggages([...baggages, newBaggage]);
     setCollapsedMap((prev) => ({ ...prev, [newBaggage.id]: false }));
+    customToast.addBaggage(type);
   };
 
   const updateBaggage = (updatedBaggage: Baggage) => {
@@ -139,6 +142,7 @@ function App() {
         delete copy[id];
         return copy;
       });
+      customToast.deleteBaggage(_baggage);
     }
   };
 
@@ -151,6 +155,7 @@ function App() {
       setBaggages([]);
       setCollapsedMap({});
       localStorage.removeItem(STORAGE_KEY);
+      customToast.clearAll();
     }
   };
   // Collapse/Expand all handlers
@@ -198,8 +203,9 @@ function App() {
     a.setAttribute("download", `luggage-tracker.csv`);
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url); // Clean up the object URL after use
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url); // Clean up the object URL after use
+  customToast.exportCSV();
   };
 
   const importFromCSV = (event: React.ChangeEvent<HTMLInputElement>) => { 
@@ -247,6 +253,7 @@ function App() {
         });
 
         setBaggages(Object.values(importedBaggages));
+        customToast.importCSV();
       },
     });
 
@@ -284,6 +291,13 @@ function App() {
 
   return (
     <div className="App">
+      <Toaster 
+        position="top-right" 
+        toastOptions={{
+          duration: 2500,
+          ...toastConfig.style,
+        }}
+      />
       <header className="app-header">
         <h1>
           <PiAirplane />

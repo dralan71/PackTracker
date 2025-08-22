@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-hot-toast";
 import {
   PiTrash,
   PiPlusCircle,
@@ -54,6 +55,7 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
         ...baggage,
         items: updatedItems,
       };
+      toast.success(`Increased quantity of '${itemName}'`);
     } else {
       // Item doesn't exist, create new item
       const newItem: Item = {
@@ -68,6 +70,7 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
         ...baggage,
         items: [...baggage.items, newItem],
       };
+      toast.success(`Added item: '${itemName}'`);
     }
     onUpdate(updatedBaggage);
   };
@@ -83,11 +86,15 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
   };
 
   const deleteItem = (itemId: string) => {
+    const item = baggage.items.find((item) => item.id === itemId);
     const updatedBaggage = {
       ...baggage,
       items: baggage.items.filter((item) => item.id !== itemId),
     };
     onUpdate(updatedBaggage);
+    if (item) {
+      toast.success(`Removed item: '${item.name}'`);
+    }
   };
 
   const updateNickname = (nickname: string) => {

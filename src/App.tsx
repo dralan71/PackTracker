@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import { Toaster, toast } from "react-hot-toast";
 import {
   PiAirplane,
   PiCloudArrowUp,
@@ -113,6 +114,7 @@ function App() {
     };
     setBaggages([...baggages, newBaggage]);
     setCollapsedMap((prev) => ({ ...prev, [newBaggage.id]: false }));
+    toast.success(`Added new baggage: ${type.replace("-", " ")}`);
   };
 
   const updateBaggage = (updatedBaggage: Baggage) => {
@@ -139,6 +141,7 @@ function App() {
         delete copy[id];
         return copy;
       });
+      toast.success(`Baggage deleted${_baggage?.nickname ? `: ${_baggage.nickname}` : ""}`);
     }
   };
 
@@ -151,6 +154,7 @@ function App() {
       setBaggages([]);
       setCollapsedMap({});
       localStorage.removeItem(STORAGE_KEY);
+      toast.success("All luggage data cleared");
     }
   };
   // Collapse/Expand all handlers
@@ -198,8 +202,9 @@ function App() {
     a.setAttribute("download", `luggage-tracker.csv`);
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url); // Clean up the object URL after use
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url); // Clean up the object URL after use
+  toast.success("CSV exported successfully");
   };
 
   const importFromCSV = (event: React.ChangeEvent<HTMLInputElement>) => { 
@@ -247,6 +252,7 @@ function App() {
         });
 
         setBaggages(Object.values(importedBaggages));
+        toast.success("CSV imported successfully");
       },
     });
 
@@ -284,6 +290,7 @@ function App() {
 
   return (
     <div className="App">
+      <Toaster position="top-right" toastOptions={{ duration: 2500 }} />
       <header className="app-header">
         <h1>
           <PiAirplane />

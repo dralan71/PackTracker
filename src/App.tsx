@@ -37,6 +37,21 @@ function isValidBaggageArray(data: unknown): data is Baggage[] {
   );
 }
 
+/**
+ * Main application component for the PackTracker UI.
+ *
+ * Manages baggage state, UI state (collapsed bags, loading), persistence to localStorage/sessionStorage,
+ * CSV import/export, and user actions (add, update, delete, clear). Renders the header, controls
+ * (import/export, collapse/expand, clear), add-baggage actions, and a list of BaggageCard components.
+ *
+ * Behavior notes:
+ * - On mount, loads baggage data from localStorage and collapsed state from sessionStorage, validating formats.
+ * - Persists baggage list to localStorage and collapsed map to sessionStorage after initial load.
+ * - add/update/delete/clear operations update state and trigger contextual toasts via `customToast`.
+ * - exportToCSV builds and downloads a CSV of all items; importFromCSV parses an uploaded CSV and replaces baggage state.
+ *
+ * @returns The app's rendered JSX element.
+ */
 function App() {
   const [baggages, setBaggages] = useState<Baggage[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);

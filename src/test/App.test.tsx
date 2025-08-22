@@ -3,6 +3,30 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../App'
 
+// Mock matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+// Mock react-hot-toast
+vi.mock('react-hot-toast', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+  Toaster: () => <div data-testid="toaster">Toaster</div>,
+}));
+
 // Mock the CSV parsing library
 vi.mock('papaparse', () => ({
   default: {
@@ -25,12 +49,21 @@ vi.mock('papaparse', () => ({
   }
 }))
 
+// Mock window.confirm
+Object.defineProperty(window, 'confirm', {
+  writable: true,
+  value: vi.fn(),
+});
+
 describe('App', () => {
   beforeEach(() => {
     // Clear localStorage and sessionStorage before each test
     localStorage.clear()
     sessionStorage.clear()
     vi.clearAllMocks()
+    
+    // Reset window.confirm to return true by default
+    window.confirm = vi.fn(() => true);
   })
 
   it('renders the app header correctly', () => {

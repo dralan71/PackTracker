@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { toast } from "react-hot-toast";
 import {
   PiTrash,
   PiPlusCircle,
@@ -8,6 +7,7 @@ import {
 } from "react-icons/pi";
 import { FaChevronCircleUp, FaChevronCircleRight } from "react-icons/fa";
 import { iconMap } from "../iconMap";
+import { customToast } from "../ToastContext";
 import { type Baggage, type Item, type DefaultItem } from "../types";
 import ItemCard from "./ItemCard";
 
@@ -55,7 +55,7 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
         ...baggage,
         items: updatedItems,
       };
-      toast.success(`Increased quantity of '${itemName}'`);
+      customToast.increaseQuantity(itemName, icon);
     } else {
       // Item doesn't exist, create new item
       const newItem: Item = {
@@ -70,7 +70,7 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
         ...baggage,
         items: [...baggage.items, newItem],
       };
-      toast.success(`Added item: '${itemName}'`);
+      customToast.addItem(itemName, icon);
     }
     onUpdate(updatedBaggage);
   };
@@ -93,7 +93,7 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
     };
     onUpdate(updatedBaggage);
     if (item) {
-      toast.success(`Removed item: '${item.name}'`);
+      customToast.removeItem(item.name);
     }
   };
 

@@ -153,4 +153,158 @@ describe('BaggageCard', () => {
     // Items should not be visible when collapsed
     expect(screen.queryByText('Test Item')).not.toBeInTheDocument()
   })
+
+  describe('Duplicate item handling', () => {
+    it('creates separate unpacked item when adding duplicate of packed item', async () => {
+      const user = userEvent.setup()
+      const baggageWithPackedItem: Baggage = {
+        ...mockBaggage,
+        items: [
+          { id: 'item1', name: 'T-Shirt', icon: 'tshirt', quantity: 5, packed: true }
+        ]
+      }
+
+      render(
+        <BaggageCard
+          baggage={baggageWithPackedItem}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          defaultItems={mockDefaultItems}
+          collapsed={false}
+          setCollapsed={mockSetCollapsed}
+        />
+      )
+
+      // Click add item button to show quick add section
+      const addItemBtn = document.querySelector('.add-item-btn') as HTMLButtonElement
+      await user.click(addItemBtn)
+
+      // Click T-Shirt in quick add
+      const tshirtBtn = screen.getByRole('button', { name: /T-Shirt/i })
+      await user.click(tshirtBtn)
+
+      // Should call onUpdate with a new unpacked item added
+      expect(mockOnUpdate).toHaveBeenCalled()
+      const updatedBaggage = mockOnUpdate.mock.calls[0][0]
+      expect(updatedBaggage.items.length).toBe(2)
+      
+      // Original packed item should be unchanged
+      const originalItem = updatedBaggage.items.find((item: { id: string }) => item.id === 'item1')
+      expect(originalItem.quantity).toBe(5)
+      expect(originalItem.packed).toBe(true)
+      
+      // New item should be unpacked with quantity 1
+      const newItem = updatedBaggage.items.find((item: { id: string }) => item.id !== 'item1')
+      expect(newItem.name).toBe('T-Shirt')
+      expect(newItem.quantity).toBe(1)
+      expect(newItem.packed).toBe(false)
+    })
+
+    it('increments quantity when adding duplicate of unpacked item', async () => {
+      const user = userEvent.setup()
+      const baggageWithUnpackedItem: Baggage = {
+        ...mockBaggage,
+        items: [
+          { id: 'item1', name: 'T-Shirt', icon: 'tshirt', quantity: 2, packed: false }
+        ]
+      }
+
+      render(
+        <BaggageCard
+          baggage={baggageWithUnpackedItem}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          defaultItems={mockDefaultItems}
+          collapsed={false}
+          setCollapsed={mockSetCollapsed}
+        />
+      )
+
+      // Click add item button to show quick add section
+      const addItemBtn = document.querySelector('.add-item-btn') as HTMLButtonElement
+      await user.click(addItemBtn)
+
+      // Click T-Shirt in quick add
+      const tshirtBtn = screen.getByRole('button', { name: /T-Shirt/i })
+      await user.click(tshirtBtn)
+
+      // Should call onUpdate with incremented quantity
+      expect(mockOnUpdate).toHaveBeenCalled()
+      const updatedBaggage = mockOnUpdate.mock.calls[0][0]
+      expect(updatedBaggage.items.length).toBe(1)
+      expect(updatedBaggage.items[0].quantity).toBe(3)
+      expect(updatedBaggage.items[0].packed).toBe(false)
+    })
+
+    it('merges items when unpacked duplicate is marked as packed', async () => {
+      const user = userEvent.setup()
+      const baggageWithDuplicates: Baggage = {
+        ...mockBaggage,
+        items: [
+          { id: 'item1', name: 'Socks', icon: 'cube', quantity: 5, packed: true },
+          { id: 'item2', name: 'Socks', icon: 'cube', quantity: 1, packed: false }
+        ]
+      }
+
+      render(
+        <BaggageCard
+          baggage={baggageWithDuplicates}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          defaultItems={mockDefaultItems}
+          collapsed={false}
+          setCollapsed={mockSetCollapsed}
+        />
+      )
+
+      // Find the pack button for the unpacked item (second item)
+      // The unpacked item should have a pack button without 'packed' class
+      const packButtons = document.querySelectorAll('.pack-btn')
+      const unpackedItemPackBtn = Array.from(packButtons).find(btn => !btn.classList.contains('packed')) as HTMLButtonElement
+      
+      await user.click(unpackedItemPackBtn)
+
+      // Should merge the items
+      expect(mockOnUpdate).toHaveBeenCalled()
+      const updatedBaggage = mockOnUpdate.mock.calls[0][0]
+      
+      // After merge, should only have 1 item
+      expect(updatedBaggage.items.length).toBe(1)
+      // The merged item should have combined quantity
+      expect(updatedBaggage.items[0].quantity).toBe(6)
+      expect(updatedBaggage.items[0].packed).toBe(true)
+    })
+
+    it('does not merge when packing item with no packed duplicate', async () => {
+      const user = userEvent.setup()
+      const baggageWithUnpackedItem: Baggage = {
+        ...mockBaggage,
+        items: [
+          { id: 'item1', name: 'Socks', icon: 'cube', quantity: 2, packed: false }
+        ]
+      }
+
+      render(
+        <BaggageCard
+          baggage={baggageWithUnpackedItem}
+          onUpdate={mockOnUpdate}
+          onDelete={mockOnDelete}
+          defaultItems={mockDefaultItems}
+          collapsed={false}
+          setCollapsed={mockSetCollapsed}
+        />
+      )
+
+      // Find and click the pack button
+      const packBtn = document.querySelector('.pack-btn') as HTMLButtonElement
+      await user.click(packBtn)
+
+      // Should just mark as packed, not merge
+      expect(mockOnUpdate).toHaveBeenCalled()
+      const updatedBaggage = mockOnUpdate.mock.calls[0][0]
+      expect(updatedBaggage.items.length).toBe(1)
+      expect(updatedBaggage.items[0].quantity).toBe(2)
+      expect(updatedBaggage.items[0].packed).toBe(true)
+    })
+  })
 })

@@ -121,4 +121,11 @@ export const customToast = {
       icon: <PiCheckCircle style={{ color: '#27ae60' }} />,
     });
   },
+
+  mergeItems: (itemName: string, newQuantity: number) => {
+    return toast.success(`Merged '${itemName}' items (quantity: ${newQuantity})`, {
+      ...toastConfig.success,
+      icon: <PiCheckCircle style={{ color: '#27ae60' }} />,
+    });
+  },
 };

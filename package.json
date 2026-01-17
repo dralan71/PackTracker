@@ -2,7 +2,7 @@
   "name": "luggage-tracker",
   "homepage": "https://dralan71.github.io/PackTracker/",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",

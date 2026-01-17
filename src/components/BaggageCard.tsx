@@ -38,14 +38,12 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
   };
 
   const addItem = (itemName: string, icon: string) => {
-    // Check if an unpacked item with the same name already exists
     const existingUnpackedItemIndex = baggage.items.findIndex(
       (item) => item.name === itemName && !item.packed
     );
 
     let updatedBaggage;
     if (existingUnpackedItemIndex !== -1) {
-      // Unpacked item exists, increment its quantity
       const updatedItems = [...baggage.items];
       updatedItems[existingUnpackedItemIndex] = {
         ...updatedItems[existingUnpackedItemIndex],
@@ -57,8 +55,6 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
       };
       customToast.increaseQuantity(itemName, icon);
     } else {
-      // No unpacked item exists with this name, create a new unpacked item
-      // This happens whether there's a packed item or no item at all
       const newItem: Item = {
         id: Date.now().toString(),
         name: itemName,
@@ -77,31 +73,23 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
   };
 
   const updateItem = (updatedItem: Item) => {
-    // Check if we're marking an item as packed
     const originalItem = baggage.items.find((item) => item.id === updatedItem.id);
     
     if (originalItem && !originalItem.packed && updatedItem.packed) {
-      // Item is being marked as packed
-      // Check if there's another packed item with the same name to merge with
       const existingPackedItem = baggage.items.find(
         (item) => item.id !== updatedItem.id && item.name === updatedItem.name && item.packed
       );
 
       if (existingPackedItem) {
-        // Merge: update the existing packed item's quantity, remove the newly packed item
         const updatedBaggage = {
           ...baggage,
           items: baggage.items
-            .map((item) => {
-              if (item.id === existingPackedItem.id) {
-                return {
-                  ...item,
-                  quantity: item.quantity + updatedItem.quantity,
-                };
-              }
-              return item;
-            })
-            .filter((item) => item.id !== updatedItem.id),
+            .filter((item) => item.id !== updatedItem.id)
+            .map((item) =>
+              item.id === existingPackedItem.id
+                ? { ...item, quantity: item.quantity + updatedItem.quantity }
+                : item
+            ),
         };
         onUpdate(updatedBaggage);
         customToast.mergeItems(updatedItem.name, existingPackedItem.quantity + updatedItem.quantity);
@@ -109,7 +97,6 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
       }
     }
 
-    // Default behavior: just update the item
     const updatedBaggage = {
       ...baggage,
       items: baggage.items.map((item) =>
@@ -203,11 +190,9 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
             <button
               onClick={() => {
                 if (collapsed) {
-                  // If the section is collapsed, expand it and show the add item section
                   setShowAddItem(true);
                   setCollapsed(false);
                 } else {
-                  // If the section is already expanded, toggle the add item section
                   setShowAddItem(!showAddItem);
                 }
               }}

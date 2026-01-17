@@ -183,17 +183,14 @@ describe('BaggageCard', () => {
       const tshirtBtn = screen.getByRole('button', { name: /T-Shirt/i })
       await user.click(tshirtBtn)
 
-      // Should call onUpdate with a new unpacked item added
       expect(mockOnUpdate).toHaveBeenCalled()
       const updatedBaggage = mockOnUpdate.mock.calls[0][0]
       expect(updatedBaggage.items.length).toBe(2)
       
-      // Original packed item should be unchanged
       const originalItem = updatedBaggage.items.find((item: { id: string }) => item.id === 'item1')
       expect(originalItem.quantity).toBe(5)
       expect(originalItem.packed).toBe(true)
       
-      // New item should be unpacked with quantity 1
       const newItem = updatedBaggage.items.find((item: { id: string }) => item.id !== 'item1')
       expect(newItem.name).toBe('T-Shirt')
       expect(newItem.quantity).toBe(1)
@@ -228,7 +225,6 @@ describe('BaggageCard', () => {
       const tshirtBtn = screen.getByRole('button', { name: /T-Shirt/i })
       await user.click(tshirtBtn)
 
-      // Should call onUpdate with incremented quantity
       expect(mockOnUpdate).toHaveBeenCalled()
       const updatedBaggage = mockOnUpdate.mock.calls[0][0]
       expect(updatedBaggage.items.length).toBe(1)
@@ -257,20 +253,14 @@ describe('BaggageCard', () => {
         />
       )
 
-      // Find the pack button for the unpacked item (second item)
-      // The unpacked item should have a pack button without 'packed' class
       const packButtons = document.querySelectorAll('.pack-btn')
       const unpackedItemPackBtn = Array.from(packButtons).find(btn => !btn.classList.contains('packed')) as HTMLButtonElement
       
       await user.click(unpackedItemPackBtn)
 
-      // Should merge the items
       expect(mockOnUpdate).toHaveBeenCalled()
       const updatedBaggage = mockOnUpdate.mock.calls[0][0]
-      
-      // After merge, should only have 1 item
       expect(updatedBaggage.items.length).toBe(1)
-      // The merged item should have combined quantity
       expect(updatedBaggage.items[0].quantity).toBe(6)
       expect(updatedBaggage.items[0].packed).toBe(true)
     })
@@ -299,7 +289,6 @@ describe('BaggageCard', () => {
       const packBtn = document.querySelector('.pack-btn') as HTMLButtonElement
       await user.click(packBtn)
 
-      // Should just mark as packed, not merge
       expect(mockOnUpdate).toHaveBeenCalled()
       const updatedBaggage = mockOnUpdate.mock.calls[0][0]
       expect(updatedBaggage.items.length).toBe(1)

@@ -22,7 +22,7 @@ export const toastConfig = {
     style: {
       borderRadius: '10px',
       background: darkMode ? '#2a2a2a' : '#fff',
-      color: darkMode ? '#fff' : '##222',
+      color: darkMode ? '#fff' : '#222',
       border: darkMode ? '1px solid #555' : '1px solid #dff3e6',
     },
   },
@@ -36,15 +36,10 @@ export const toastConfig = {
   },
 };
 
-// Helper function to get styled icon component
 const getStyledIconComponent = (iconName: string) => {
   const IconComponent = iconMap[iconName] || iconMap["PiCube"];
-  
-  // React icons accept standard SVG props including style and color
   return React.createElement(IconComponent, {
     style: { color: '#27ae60' },
-    // Alternative: you can also use the color prop directly
-    // color: '#27ae60'
   } as React.ComponentProps<typeof IconComponent>);
 };
 

@@ -269,31 +269,25 @@ describe('App', () => {
       expect(screen.queryByText('No baggage added yet. Start by adding your first bag!')).not.toBeInTheDocument()
     })
     
-    // Click add item button
+    // Click add item button (must exist or test fails)
     const addItemBtn = document.querySelector('.add-item-btn') as HTMLButtonElement
-    if (addItemBtn) {
-      await user.click(addItemBtn)
-      
-      // Wait for quick add section and click a default item
-      await waitFor(() => {
-        const quickAddButtons = screen.queryAllByText(/T-Shirt|Pants|Shoes/i)
-        if (quickAddButtons.length > 0) {
-          return true
-        }
-      }, { timeout: 2000 }).catch(() => {})
-      
-      // Try to add an item if available
-      const itemButtons = screen.queryAllByRole('button', { name: /T-Shirt|Pants|Shoes/i })
-      if (itemButtons.length > 0) {
-        await user.click(itemButtons[0])
-        
-        // Should show packed count
-        await waitFor(() => {
-          const packedChip = screen.queryByText(/0\/1 packed|1\/1 packed/i)
-          expect(packedChip).toBeInTheDocument()
-        }, { timeout: 2000 })
-      }
-    }
+    expect(addItemBtn).toBeTruthy()
+    await user.click(addItemBtn)
+
+    // Wait for quick add section and assert buttons appear
+    await waitFor(() => {
+      const quickAddButtons = screen.queryAllByRole('button', { name: /T-Shirt|Pants|Shoes/i })
+      expect(quickAddButtons.length).toBeGreaterThan(0)
+    }, { timeout: 2000 })
+
+    const itemButtons = screen.getAllByRole('button', { name: /T-Shirt|Pants|Shoes/i })
+    expect(itemButtons.length).toBeGreaterThan(0)
+    await user.click(itemButtons[0])
+
+    // Should show packed count
+    await waitFor(() => {
+      expect(screen.getByText(/0\/1 packed|1\/1 packed/i)).toBeInTheDocument()
+    }, { timeout: 2000 })
   })
 
   it('updates packed count when items are packed/unpacked', async () => {
@@ -321,15 +315,14 @@ describe('App', () => {
       expect(screen.getByText('0/2 packed')).toBeInTheDocument()
     })
     
-    // Find and click a pack button
+    // Find and click a pack button (must exist or test fails)
     const packButtons = document.querySelectorAll('.pack-btn')
-    if (packButtons.length > 0) {
-      await user.click(packButtons[0] as HTMLButtonElement)
-      
-      // Should update to show 1/2 packed
-      await waitFor(() => {
-        expect(screen.getByText('1/2 packed')).toBeInTheDocument()
-      })
-    }
+    expect(packButtons.length).toBeGreaterThan(0)
+    await user.click(packButtons[0] as HTMLButtonElement)
+
+    // Should update to show 1/2 packed
+    await waitFor(() => {
+      expect(screen.getByText('1/2 packed')).toBeInTheDocument()
+    })
   })
 })

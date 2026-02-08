@@ -160,11 +160,11 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
           {totalCount > 0 && (
             <div className="progress-ring-wrap">
               <svg className="progress-ring" viewBox="0 0 36 36">
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e0d5c3" strokeWidth="2.5" />
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--border)" strokeWidth="2.5" pathLength="100" />
                 <circle cx="18" cy="18" r="15.9" fill="none"
-                  stroke="#b54830" strokeWidth="2.5"
+                  stroke="var(--accent)" strokeWidth="2.5"
                   strokeDasharray={`${pct} ${100 - pct}`}
-                  strokeDashoffset="25" strokeLinecap="round" />
+                  strokeDashoffset="25" strokeLinecap="round" pathLength="100" />
               </svg>
               <span className="progress-ring-text">{packedCount}/{totalCount}</span>
             </div>

@@ -139,6 +139,10 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
     }
   };
 
+  const packedCount = baggage.items.filter((item) => item.packed).length;
+  const totalCount = baggage.items.length;
+  const pct = totalCount > 0 ? Math.round((packedCount / totalCount) * 100) : 0;
+
   return (
     <div className="baggage-card">
       <div className="baggage-header">
@@ -153,6 +157,18 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
           />
         </div>
         <div className="header-actions-horizontal">
+          {totalCount > 0 && (
+            <div className="progress-ring-wrap">
+              <svg className="progress-ring" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e0d5c3" strokeWidth="2.5" />
+                <circle cx="18" cy="18" r="15.9" fill="none"
+                  stroke="#b54830" strokeWidth="2.5"
+                  strokeDasharray={`${pct} ${100 - pct}`}
+                  strokeDashoffset="25" strokeLinecap="round" />
+              </svg>
+              <span className="progress-ring-text">{packedCount}/{totalCount}</span>
+            </div>
+          )}
           <button onClick={() => onDelete(baggage.id)} className="delete-btn">
             <PiTrash />
           </button>

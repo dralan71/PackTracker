@@ -271,14 +271,22 @@ function App() {
     "other",
   ];
 
+  const totalItems = baggages.reduce((a, b) => a + b.items.length, 0);
+  const totalPacked = baggages.reduce(
+    (a, b) => a + b.items.filter((i) => i.packed).length, 0,
+  );
+
   // Show loading indicator while data is being loaded
   if (!isLoaded) {
     return (
       <div className="App">
         <header className="app-header">
           <h1>
-            <PiAirplane />
-            PackTracker
+            <span className="logo-mark"><PiAirplane /></span>
+            <span className="logo-text-group">
+              PackTracker
+              <span className="logo-sub">Luggage Management</span>
+            </span>
           </h1>
         </header>
         <div className="loading-state">
@@ -300,9 +308,23 @@ function App() {
       />
       <header className="app-header">
         <h1>
-          <PiAirplane />
-          PackTracker
+          <span className="logo-mark"><PiAirplane /></span>
+          <span className="logo-text-group">
+            PackTracker
+            <span className="logo-sub">Luggage Management</span>
+          </span>
         </h1>
+
+        {baggages.length > 0 && (
+          <div className="header-summary">
+            <span className="summary-chip">{baggages.length} {baggages.length === 1 ? 'bag' : 'bags'}</span>
+            {totalItems > 0 ? (
+              <span className="summary-chip">{totalPacked}/{totalItems} packed</span>
+            ) : (
+              <span className="summary-chip">No items yet</span>
+            )}
+          </div>
+        )}
 
         <div className="header-actions">
           <input

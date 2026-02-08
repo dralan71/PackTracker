@@ -231,4 +231,98 @@ describe('App', () => {
     // Should have called localStorage.getItem
     expect(localStorage.getItem).toHaveBeenCalledWith('luggage-tracker-data')
   })
+
+  it('shows summary chips when baggages are added', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    
+    await waitFor(() => {
+      expect(screen.getByText('Add Baggage:')).toBeInTheDocument()
+    })
+    
+    // Add a baggage
+    await user.click(screen.getByText('CARRY ON'))
+    
+    // Should show summary chips (text may be split across nodes)
+    await waitFor(() => {
+      const summaryChips = document.querySelectorAll('.summary-chip')
+      expect(summaryChips.length).toBeGreaterThan(0)
+      const chipTexts = Array.from(summaryChips).map(chip => chip.textContent)
+      expect(chipTexts.some(text => text?.includes('bag'))).toBe(true)
+      expect(chipTexts.some(text => text?.includes('No items yet'))).toBe(true)
+    })
+  })
+
+  it('shows packed/total count when items are added', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    
+    await waitFor(() => {
+      expect(screen.getByText('Add Baggage:')).toBeInTheDocument()
+    })
+    
+    // Add a baggage
+    await user.click(screen.getByText('CARRY ON'))
+    
+    // Wait for baggage card to appear
+    await waitFor(() => {
+      expect(screen.queryByText('No baggage added yet. Start by adding your first bag!')).not.toBeInTheDocument()
+    })
+    
+    // Click add item button (must exist or test fails)
+    const addItemBtn = document.querySelector('.add-item-btn') as HTMLButtonElement
+    expect(addItemBtn).toBeTruthy()
+    await user.click(addItemBtn)
+
+    // Wait for quick add section and assert buttons appear
+    await waitFor(() => {
+      const quickAddButtons = screen.queryAllByRole('button', { name: /T-Shirt|Pants|Shoes/i })
+      expect(quickAddButtons.length).toBeGreaterThan(0)
+    }, { timeout: 2000 })
+
+    const itemButtons = screen.getAllByRole('button', { name: /T-Shirt|Pants|Shoes/i })
+    expect(itemButtons.length).toBeGreaterThan(0)
+    await user.click(itemButtons[0])
+
+    // Should show packed count
+    await waitFor(() => {
+      expect(screen.getByText(/0\/1 packed|1\/1 packed/i)).toBeInTheDocument()
+    }, { timeout: 2000 })
+  })
+
+  it('updates packed count when items are packed/unpacked', async () => {
+    const user = userEvent.setup()
+    
+    // Set up localStorage with baggage containing items
+    const mockData = [
+      {
+        id: '1',
+        type: 'carry-on',
+        nickname: 'Test Bag',
+        items: [
+          { id: 'item1', name: 'Item 1', icon: 'cube', quantity: 1, packed: false },
+          { id: 'item2', name: 'Item 2', icon: 'cube', quantity: 1, packed: false }
+        ]
+      }
+    ]
+    
+    localStorage.getItem = vi.fn().mockReturnValue(JSON.stringify(mockData))
+    
+    render(<App />)
+    
+    await waitFor(() => {
+      expect(screen.getByText('1 bag')).toBeInTheDocument()
+      expect(screen.getByText('0/2 packed')).toBeInTheDocument()
+    })
+    
+    // Find and click a pack button (must exist or test fails)
+    const packButtons = document.querySelectorAll('.pack-btn')
+    expect(packButtons.length).toBeGreaterThan(0)
+    await user.click(packButtons[0] as HTMLButtonElement)
+
+    // Should update to show 1/2 packed
+    await waitFor(() => {
+      expect(screen.getByText('1/2 packed')).toBeInTheDocument()
+    })
+  })
 })

@@ -1,11 +1,25 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Design system */
+  --bg: #f0e8d8;
+  --surface: #faf6ee;
+  --border: #e0d5c3;
+  --text: #3a2f24;
+  --text-muted: #8c7e6d;
+  --accent: #b54830;
+  --accent-hover: #983c27;
+  --warm: #c89f6a;
+  --packed-bg: #ece7dd;
+  --packed-border: #b5aa96;
+  --packed-text: #8c8274;
+  --radius: 14px;
+  --font-display: 'Fraunces', serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  font-family: var(--font-body);
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--text);
+  background-color: var(--bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,13 +27,31 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Subtle diagonal stripe texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--text) 0px,
+    var(--text) 1px,
+    transparent 1px,
+    transparent 14px
+  );
+}
+
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--accent);
   text-decoration: inherit;
 }
+
 a:hover {
-  color: #535bf2;
+  color: var(--accent-hover);
 }
 
 body {
@@ -29,38 +61,31 @@ body {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-family: var(--font-display);
+  font-size: 2.4em;
   line-height: 1.1;
 }
 
 button {
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  font-family: var(--font-body);
+  background-color: var(--surface);
+  color: var(--text);
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: all 0.2s;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(58, 47, 36, 0.08);
+}
+
+button:focus,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }

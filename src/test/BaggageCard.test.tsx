@@ -112,6 +112,36 @@ describe('BaggageCard', () => {
 
     // Should show total item count
     expect(screen.getByText('Items (2)')).toBeInTheDocument()
+    
+    // Should show progress ring and count
+    const progressRingWrap = document.querySelector('.progress-ring-wrap')
+    expect(progressRingWrap).toBeInTheDocument()
+    expect(screen.getByText('1/2')).toBeInTheDocument()
+  })
+
+  it('does not show progress ring for empty bags', () => {
+    const emptyBaggage: Baggage = {
+      ...mockBaggage,
+      items: []
+    }
+
+    render(
+      <BaggageCard
+        baggage={emptyBaggage}
+        onUpdate={mockOnUpdate}
+        onDelete={mockOnDelete}
+        defaultItems={mockDefaultItems}
+        collapsed={false}
+        setCollapsed={mockSetCollapsed}
+      />
+    )
+
+    // Progress ring should not be rendered
+    const progressRingWrap = document.querySelector('.progress-ring-wrap')
+    expect(progressRingWrap).not.toBeInTheDocument()
+    
+    // Progress count text should not be present
+    expect(screen.queryByText(/0\/0/)).not.toBeInTheDocument()
   })
 
   it('can delete baggage when confirmed', async () => {

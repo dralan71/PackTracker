@@ -7,6 +7,7 @@ vi.mock('react-hot-toast', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
+    custom: vi.fn(),
   },
   Toaster: () => <div data-testid="toaster">Toaster</div>,
 }));
@@ -29,26 +30,26 @@ describe('ToastContext', () => {
     expect(typeof customToast.importCSV).toBe('function');
   });
 
-  it('should call toast.success when customToast functions are used', async () => {
+  it('should call toast.custom when customToast functions are used', async () => {
     const { toast } = await import('react-hot-toast');
     const { customToast } = await import('../ToastContext');
-    
+
     customToast.addItem('Test Item', 'PiCube');
-    expect(toast.success).toHaveBeenCalledWith(
-      "Added item: 'Test Item'",
-      expect.any(Object)
+    expect(toast.custom).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.objectContaining({ duration: 2500 })
     );
 
     customToast.addBaggage('carry-on');
-    expect(toast.success).toHaveBeenCalledWith(
-      'Added new baggage: carry on',
-      expect.any(Object)
+    expect(toast.custom).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.objectContaining({ duration: 2500 })
     );
 
     customToast.removeItem('Test Item');
-    expect(toast.success).toHaveBeenCalledWith(
-      "Removed item: 'Test Item'",
-      expect.any(Object)
+    expect(toast.custom).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.objectContaining({ duration: 2500 })
     );
   });
 });

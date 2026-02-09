@@ -32,7 +32,7 @@
   stroke-linecap: round;
   stroke-dasharray: 50.27;
   stroke-dashoffset: 0;
-  animation: toastRingShrink 2.5s linear forwards;
+  animation: toastRingShrink var(--toast-duration-ms, 2500ms) linear forwards;
 }
 
 .toast__ring-fill--success { stroke: #5a9a6e; }

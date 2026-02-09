@@ -5,13 +5,22 @@ import React from "react";
 import { ToastContent, type ToastType } from "./Toast";
 export type { ToastType };
 
+export const TOAST_DURATION_MS = 2500;
+
 const TRASH_COLOR = "var(--accent)";
 const SUCCESS_ICON_COLOR = "#5a9a6e";
 
 function showToast(type: ToastType, message: string, icon: React.ReactElement) {
   return toast.custom(
-    () => <ToastContent type={type} message={message} icon={icon} />,
-    { duration: 2500 }
+    () => (
+      <ToastContent
+        type={type}
+        message={message}
+        icon={icon}
+        durationMs={TOAST_DURATION_MS}
+      />
+    ),
+    { duration: TOAST_DURATION_MS }
   );
 }
 
@@ -44,7 +53,7 @@ export const customToast = {
     return showToast(
       "error",
       message,
-      <PiXCircle style={{ color: "var(--accent)" }} />
+      <PiXCircle style={{ color: TRASH_COLOR }} />
     );
   },
 

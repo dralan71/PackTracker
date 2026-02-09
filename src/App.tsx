@@ -11,7 +11,7 @@ import {
 import { type Baggage, type BaggageType, type Item } from "./types";
 import BaggageCard from "./components/BaggageCard";
 import { DEFAULT_ITEMS } from "./data/defaultItems";
-import { customToast, toastConfig } from "./ToastContext";
+import { customToast, toastConfig, TOAST_DURATION_MS } from "./ToastContext";
 import Papa from "papaparse";
 import "./App.css";
 
@@ -302,7 +302,7 @@ function App() {
       <Toaster 
         position="top-right" 
         toastOptions={{
-          duration: 2500,
+          duration: TOAST_DURATION_MS,
           ...toastConfig.style,
         }}
       />

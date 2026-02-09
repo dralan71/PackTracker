@@ -2,9 +2,8 @@ import { toast } from "react-hot-toast";
 import { PiTrash, PiSuitcase, PiCheckCircle, PiXCircle } from "react-icons/pi";
 import { iconMap } from "./iconMap";
 import React from "react";
-import { ToastContent } from "./Toast";
-
-export type ToastType = "success" | "error";
+import { ToastContent, type ToastType } from "./Toast";
+export type { ToastType };
 
 const TRASH_COLOR = "var(--accent)";
 const SUCCESS_ICON_COLOR = "#5a9a6e";

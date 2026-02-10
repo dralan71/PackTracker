@@ -303,7 +303,7 @@ function App() {
         position="top-right" 
         toastOptions={{
           duration: TOAST_DURATION_MS,
-          ...toastConfig.style,
+          style: { ...toastConfig.style },
         }}
       />
       <header className="app-header">

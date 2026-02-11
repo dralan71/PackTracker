@@ -23,6 +23,7 @@ vi.mock('react-hot-toast', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
+    custom: vi.fn(),
   },
   Toaster: () => <div data-testid="toaster">Toaster</div>,
 }));

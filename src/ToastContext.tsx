@@ -2,125 +2,124 @@ import { toast } from "react-hot-toast";
 import { PiTrash, PiSuitcase, PiCheckCircle, PiXCircle } from "react-icons/pi";
 import { iconMap } from "./iconMap";
 import React from "react";
+import { ToastContent, type ToastType } from "./Toast";
+export type { ToastType };
 
-// Simple dark-mode resolver based on user media preference. This keeps the
-// behavior lightweight: JS chooses colors at runtime using a ternary.
-const darkMode = typeof window !== 'undefined' &&
-  typeof window.matchMedia === 'function' &&
-  window.matchMedia('(prefers-color-scheme: dark)').matches;
+export const TOAST_DURATION_MS = 2500;
 
-export const toastConfig = {
-  style: {
-    borderRadius: '10px',
-    background: darkMode ? '#2a2a2a' : '#ffffff',
-    color: darkMode ? '#fff' : '#222222',
-    border: darkMode ? '1px solid #444' : '1px solid #e6e6e6',
-    fontSize: '14px',
-    padding: '12px 16px',
-  },
-  success: {
-    style: {
-      borderRadius: '10px',
-      background: darkMode ? '#2a2a2a' : '#fff',
-      color: darkMode ? '#fff' : '#222',
-      border: darkMode ? '1px solid #555' : '1px solid #dff3e6',
-    },
-  },
-  error: {
-    style: {
-      borderRadius: '10px',
-      background: darkMode ? '#2a2a2a' : '#fff6f6',
-      color: darkMode ? '#fff' : '#3b0d0d',
-      border: darkMode ? '1px solid #e74c3c' : '1px solid #f5c6c6',
-    },
-  },
-};
+const TRASH_COLOR = "var(--accent)";
+const SUCCESS_ICON_COLOR = "#5a9a6e";
+
+function showToast(type: ToastType, message: string, icon: React.ReactElement) {
+  return toast.custom(
+    () => (
+      <ToastContent
+        type={type}
+        message={message}
+        icon={icon}
+        durationMs={TOAST_DURATION_MS}
+      />
+    ),
+    { duration: TOAST_DURATION_MS }
+  );
+}
 
 const getStyledIconComponent = (iconName: string) => {
   const IconComponent = iconMap[iconName] || iconMap["PiCube"];
   return React.createElement(IconComponent, {
-    style: { color: '#27ae60' },
+    style: { color: SUCCESS_ICON_COLOR },
   } as React.ComponentProps<typeof IconComponent>);
 };
 
-// Custom toast functions with icons
+export const toastConfig = {
+  style: {
+    padding: 0,
+    background: "transparent",
+    border: "none",
+    boxShadow: "none",
+  },
+};
+
 export const customToast = {
   success: (message: string, icon?: React.ReactElement) => {
-    return toast.success(message, {
-      ...toastConfig.success,
-      icon: icon || <PiCheckCircle style={{ color: '#27ae60' }} />,
-    });
+    return showToast(
+      "success",
+      message,
+      icon || <PiCheckCircle style={{ color: SUCCESS_ICON_COLOR }} />
+    );
   },
 
   error: (message: string) => {
-    return toast.error(message, {
-      ...toastConfig.error,
-      icon: <PiXCircle style={{ color: '#e74c3c' }} />,
-    });
+    return showToast(
+      "error",
+      message,
+      <PiXCircle style={{ color: TRASH_COLOR }} />
+    );
   },
 
   addItem: (itemName: string, itemIcon: string) => {
     const styledIcon = getStyledIconComponent(itemIcon);
-    return toast.success(`Added item: '${itemName}'`, {
-      ...toastConfig.success,
-      icon: styledIcon,
-    });
+    return showToast("success", `Added item: '${itemName}'`, styledIcon);
   },
 
   increaseQuantity: (itemName: string, itemIcon: string) => {
     const styledIcon = getStyledIconComponent(itemIcon);
-    return toast.success(`Increased quantity of '${itemName}'`, {
-      ...toastConfig.success,
-      icon: styledIcon,
-    });
+    return showToast("success", `Increased quantity of '${itemName}'`, styledIcon);
   },
 
   removeItem: (itemName: string) => {
-    return toast.success(`Removed item: '${itemName}'`, {
-      ...toastConfig.success,
-      icon: <PiTrash style={{ color: '#e74c3c' }} />,
-    });
+    return showToast(
+      "success",
+      `Removed item: '${itemName}'`,
+      <PiTrash style={{ color: TRASH_COLOR }} />
+    );
   },
 
   addBaggage: (baggageType: string) => {
-    return toast.success(`Added new baggage: ${baggageType.replace("-", " ")}`, {
-      ...toastConfig.success,
-      icon: <PiSuitcase style={{ color: '#27ae60' }} />,
-    });
+    return showToast(
+      "success",
+      `Added new baggage: ${baggageType.replace("-", " ")}`,
+      <PiSuitcase style={{ color: SUCCESS_ICON_COLOR }} />
+    );
   },
 
   deleteBaggage: (baggage?: { nickname?: string }) => {
-    return toast.success(`Baggage deleted${baggage?.nickname ? `: ${baggage.nickname}` : ""}`, {
-      ...toastConfig.success,
-      icon: <PiTrash style={{ color: '#e74c3c' }} />,
-    });
+    return showToast(
+      "success",
+      `Baggage deleted${baggage?.nickname ? `: ${baggage.nickname}` : ""}`,
+      <PiTrash style={{ color: TRASH_COLOR }} />
+    );
   },
 
   clearAll: () => {
-    return toast.success("All luggage data cleared", {
-      ...toastConfig.success,
-      icon: <PiTrash style={{ color: '#e74c3c' }} />,
-    });
+    return showToast(
+      "success",
+      "All luggage data cleared",
+      <PiTrash style={{ color: TRASH_COLOR }} />
+    );
   },
 
   exportCSV: () => {
-    return toast.success("CSV exported successfully", {
-      ...toastConfig.success,
-      icon: <PiCheckCircle style={{ color: '#27ae60' }} />,
-    });
+    return showToast(
+      "success",
+      "CSV exported successfully",
+      <PiCheckCircle style={{ color: SUCCESS_ICON_COLOR }} />
+    );
   },
 
   importCSV: () => {
-    return toast.success("CSV imported successfully", {
-      ...toastConfig.success,
-      icon: <PiCheckCircle style={{ color: '#27ae60' }} />,
-    });
+    return showToast(
+      "success",
+      "CSV imported successfully",
+      <PiCheckCircle style={{ color: SUCCESS_ICON_COLOR }} />
+    );
   },
 
   mergeItems: (itemName: string, newQuantity: number) => {
-    return toast.success(`Merged '${itemName}' items (quantity: ${newQuantity})`, {
-      ...toastConfig.success,
-      icon: <PiCheckCircle style={{ color: '#27ae60' }} />,
-    });
+    return showToast(
+      "success",
+      `Merged '${itemName}' items (quantity: ${newQuantity})`,
+      <PiCheckCircle style={{ color: SUCCESS_ICON_COLOR }} />
+    );
   },
 };

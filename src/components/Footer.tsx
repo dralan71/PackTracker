@@ -3,7 +3,7 @@ import { FaGithub } from "react-icons/fa";
 
 const Footer: React.FC = () => (
   <footer className="app-footer">
-    <span>Copyright (c) 2025 Alan C &nbsp;|&nbsp; </span>
+    <span>Copyright (c) 2026 Alan C &nbsp;|&nbsp; </span>
     <a
       href="https://github.com/dralan71/PackTracker"
       target="_blank"

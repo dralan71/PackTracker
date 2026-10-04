@@ -1,5 +1,6 @@
 import { 
   PiPants,
+  PiDress,
   PiTShirt,
   PiShirtFolded,
   PiSock,
@@ -22,6 +23,7 @@ import { GiMonclerJacket, GiUnderwearShorts, GiShorts } from 'react-icons/gi';
 
 export const iconMap: { [key: string]: React.ComponentType } = {
   'PiPants': PiPants,
+  'PiDress': PiDress,
   'PiTShirt': PiTShirt,
   'PiShirtFolded': PiShirtFolded,
   'PiSock': PiSock,

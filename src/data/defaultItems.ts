@@ -6,6 +6,7 @@ export const DEFAULT_ITEMS: DefaultItem[] = [
   { name: 'T-Shirt', icon: 'PiTShirt' , emoji: '👕' },
   { name: 'Polo Shirt', icon: 'PiTShirt' , emoji: '👕' },
   { name: 'Dress Shirt', icon: 'PiShirtFolded' , emoji: '👔' },
+  { name: 'Dress', icon: 'PiDress', emoji: '👗' },
   { name: 'Socks', icon: 'PiSock' , emoji: '🧦' },
   { name: 'Underwear', icon: 'GiUnderwearShorts' , emoji: '🩲' },
   { name: 'Pajama Pants', icon: 'PiBed' , emoji: '🛏️' },

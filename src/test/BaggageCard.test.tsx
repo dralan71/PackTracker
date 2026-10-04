@@ -20,7 +20,7 @@ const mockBaggage: Baggage = {
       name: 'Test Item',
       icon: 'cube',
       quantity: 1,
-      packed: false
+      packed: false, colour: null
     }
   ]
 }
@@ -94,8 +94,8 @@ describe('BaggageCard', () => {
     const baggageWithMixedItems: Baggage = {
       ...mockBaggage,
       items: [
-        { id: '1', name: 'Packed Item', icon: 'cube', quantity: 1, packed: true },
-        { id: '2', name: 'Unpacked Item', icon: 'cube', quantity: 1, packed: false }
+        { id: '1', name: 'Packed Item', icon: 'cube', quantity: 1, packed: true, colour: null },
+        { id: '2', name: 'Unpacked Item', icon: 'cube', quantity: 1, packed: false, colour: null }
       ]
     }
 
@@ -190,7 +190,7 @@ describe('BaggageCard', () => {
       const baggageWithPackedItem: Baggage = {
         ...mockBaggage,
         items: [
-          { id: 'item1', name: 'T-Shirt', icon: 'tshirt', quantity: 5, packed: true }
+          { id: 'item1', name: 'T-Shirt', icon: 'tshirt', quantity: 5, packed: true, colour: null }
         ]
       }
 
@@ -210,7 +210,7 @@ describe('BaggageCard', () => {
       await user.click(addItemBtn)
 
       // Click T-Shirt in quick add
-      const tshirtBtn = screen.getByRole('button', { name: /T-Shirt/i })
+      const tshirtBtn = screen.getByRole('button', { name: /^T-Shirt$/i })
       await user.click(tshirtBtn)
 
       expect(mockOnUpdate).toHaveBeenCalled()
@@ -232,7 +232,7 @@ describe('BaggageCard', () => {
       const baggageWithUnpackedItem: Baggage = {
         ...mockBaggage,
         items: [
-          { id: 'item1', name: 'T-Shirt', icon: 'tshirt', quantity: 2, packed: false }
+          { id: 'item1', name: 'T-Shirt', icon: 'tshirt', quantity: 2, packed: false, colour: null }
         ]
       }
 
@@ -252,7 +252,7 @@ describe('BaggageCard', () => {
       await user.click(addItemBtn)
 
       // Click T-Shirt in quick add
-      const tshirtBtn = screen.getByRole('button', { name: /T-Shirt/i })
+      const tshirtBtn = screen.getByRole('button', { name: /^T-Shirt$/i })
       await user.click(tshirtBtn)
 
       expect(mockOnUpdate).toHaveBeenCalled()
@@ -267,8 +267,8 @@ describe('BaggageCard', () => {
       const baggageWithDuplicates: Baggage = {
         ...mockBaggage,
         items: [
-          { id: 'item1', name: 'Socks', icon: 'cube', quantity: 5, packed: true },
-          { id: 'item2', name: 'Socks', icon: 'cube', quantity: 1, packed: false }
+          { id: 'item1', name: 'Socks', icon: 'cube', quantity: 5, packed: true, colour: null },
+          { id: 'item2', name: 'Socks', icon: 'cube', quantity: 1, packed: false, colour: null }
         ]
       }
 
@@ -300,7 +300,7 @@ describe('BaggageCard', () => {
       const baggageWithUnpackedItem: Baggage = {
         ...mockBaggage,
         items: [
-          { id: 'item1', name: 'Socks', icon: 'cube', quantity: 2, packed: false }
+          { id: 'item1', name: 'Socks', icon: 'cube', quantity: 2, packed: false, colour: null }
         ]
       }
 

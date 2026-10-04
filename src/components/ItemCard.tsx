@@ -8,6 +8,7 @@ import {
 } from 'react-icons/pi';
 import { iconMap } from '../iconMap';
 import { type Item } from '../types';
+import ColourPicker from './ColourPicker';
 
 interface ItemCardProps {
   item: Item;
@@ -16,10 +17,7 @@ interface ItemCardProps {
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({ item, onUpdate, onDelete }) => {
-  // Icon mapping function
-  const getIconComponent = (iconName: string) => {
-    return iconMap[iconName] || iconMap['PiCube'];
-  };
+  const Icon = iconMap[item.icon] || iconMap['PiCube'];
 
   const updateQuantity = (quantity: number) => {
     if (quantity > 0) {
@@ -34,7 +32,22 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onUpdate, onDelete }) => {
   return (
     <div className={`item-card ${item.packed ? 'packed' : ''}`}>
       <div className="item-info">
-        {React.createElement(getIconComponent(item.icon))}
+        <ColourPicker
+          colour={item.colour}
+          onChange={(colour) => onUpdate({ ...item, colour })}
+          label={item.name}
+        >
+          <span className="item-icon-wrap">
+            <Icon />
+            {item.colour !== null && (
+              <span
+                className="item-colour-dot"
+                style={{ backgroundColor: item.colour }}
+                aria-hidden="true"
+              />
+            )}
+          </span>
+        </ColourPicker>
         <span className="item-name">{item.name}</span>
       </div>
       

@@ -4,11 +4,13 @@ import {
   PiPlusCircle,
   PiCheckCircle,
   PiCheckCircleFill,
+  PiPalette,
 } from "react-icons/pi";
 import { FaChevronCircleUp, FaChevronCircleRight } from "react-icons/fa";
 import { iconMap } from "../iconMap";
 import { customToast } from "../ToastContext";
 import { type Baggage, type Item, type DefaultItem } from "../types";
+import ColourPicker from "./ColourPicker";
 import ItemCard from "./ItemCard";
 
 interface BaggageCardProps {
@@ -30,16 +32,20 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
 }) => {
   const [showAddItem, setShowAddItem] = useState(false);
   const [customItemName, setCustomItemName] = useState("");
+  const [itemColour, setItemColour] = useState<string | null>(null);
   const [customItemIcon, setCustomItemIcon] = useState("PiCube");
 
-  // Icon mapping function
   const getIconComponent = (iconName: string) => {
     return iconMap[iconName] || iconMap["PiCube"];
   };
 
   const addItem = (itemName: string, icon: string) => {
+    const colour = itemColour;
     const existingUnpackedItemIndex = baggage.items.findIndex(
-      (item) => item.name === itemName && !item.packed
+      (item) =>
+        item.name === itemName &&
+        item.colour === colour &&
+        !item.packed
     );
 
     let updatedBaggage;
@@ -61,6 +67,7 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
         icon,
         quantity: 1,
         packed: false,
+        colour,
       };
 
       updatedBaggage = {
@@ -77,7 +84,11 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
     
     if (originalItem && !originalItem.packed && updatedItem.packed) {
       const existingPackedItem = baggage.items.find(
-        (item) => item.id !== updatedItem.id && item.name === updatedItem.name && item.packed
+        (item) =>
+          item.id !== updatedItem.id &&
+          item.name === updatedItem.name &&
+          item.colour === updatedItem.colour &&
+          item.packed
       );
 
       if (existingPackedItem) {
@@ -223,6 +234,25 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
           <>
             {showAddItem && (
               <div className="add-item-section">
+                <div className="item-colour-field">
+                  <span className="item-colour-field-label">Colour</span>
+                  <ColourPicker
+                    colour={itemColour}
+                    onChange={setItemColour}
+                    label="new items"
+                  >
+                    <span className="item-icon-wrap">
+                      <PiPalette />
+                      {itemColour !== null && (
+                        <span
+                          className="item-colour-dot"
+                          style={{ backgroundColor: itemColour }}
+                          aria-hidden="true"
+                        />
+                      )}
+                    </span>
+                  </ColourPicker>
+                </div>
                 <div className="default-items">
                   <h5>Quick Add:</h5>
                   <div className="default-items-grid">
@@ -232,7 +262,16 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
                         onClick={() => addItem(item.name, item.icon)}
                         className="default-item-btn"
                       >
-                        {React.createElement(getIconComponent(item.icon))}
+                        <span className="item-icon-wrap">
+                          {React.createElement(getIconComponent(item.icon))}
+                          {itemColour !== null && (
+                            <span
+                              className="item-colour-dot"
+                              style={{ backgroundColor: itemColour }}
+                              aria-hidden="true"
+                            />
+                          )}
+                        </span>
                         <span>{item.name}</span>
                       </button>
                     ))}

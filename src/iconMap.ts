@@ -20,8 +20,9 @@ import {
   PiBelt,
 } from 'react-icons/pi';
 import { GiMonclerJacket, GiUnderwearShorts, GiShorts } from 'react-icons/gi';
+import type { ComponentType } from 'react';
 
-export const iconMap: { [key: string]: React.ComponentType } = {
+export const iconMap: { [key: string]: ComponentType } = {
   'PiPants': PiPants,
   'PiDress': PiDress,
   'PiTShirt': PiTShirt,
@@ -43,6 +44,6 @@ export const iconMap: { [key: string]: React.ComponentType } = {
   'PiBelt': PiBelt,
   'GiMonclerJacket': GiMonclerJacket,
   'PiCoat': GiMonclerJacket,
-  'PiCube': PiCube, // Default icon if not found
+  'PiCube': PiCube,
   'GiShorts': GiShorts,
 };

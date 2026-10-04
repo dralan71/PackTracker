@@ -35,7 +35,17 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onUpdate, onDelete }) => {
     <div className={`item-card ${item.packed ? 'packed' : ''}`}>
       <div className="item-info">
         {React.createElement(getIconComponent(item.icon))}
-        <span className="item-name">{item.name}</span>
+        <div className="item-details">
+          <span className="item-name">{item.name}</span>
+          <input
+            type="text"
+            className="item-colour-input"
+            aria-label={`Colour for ${item.name}`}
+            placeholder="Add colour..."
+            value={item.colour || ''}
+            onChange={(e) => onUpdate({ ...item, colour: e.target.value || undefined })}
+          />
+        </div>
       </div>
       
       <div className="item-controls">

@@ -32,7 +32,8 @@ function isValidBaggageArray(data: unknown): data is Baggage[] {
           typeof item.name === "string" &&
           typeof item.icon === "string" &&
           typeof item.quantity === "number" &&
-          typeof item.packed === "boolean"
+          typeof item.packed === "boolean" &&
+          (item.colour === undefined || typeof item.colour === "string")
       )
   );
 }
@@ -176,6 +177,7 @@ function App() {
       itemName: string;
       quantity: number;
       packed: boolean;
+      itemColour: string;
     }
     
     const csvData: CSVRow[] = [];
@@ -190,6 +192,7 @@ function App() {
           itemName: item.name,
           quantity: item.quantity,
           packed: item.packed,
+          itemColour: item.colour?.trim() || "",
         });
       });
     });
@@ -225,6 +228,7 @@ function App() {
           itemName?: string;
           quantity?: string;
           packed?: string;
+          itemColour?: string;
         }
         
         const importedBaggages: { [key: string]: Baggage } = {};
@@ -248,6 +252,7 @@ function App() {
               icon: row.itemIcon || "cube",
               quantity: parseInt(row.quantity || "1") || 1,
               packed: row.packed === "true",
+              colour: row.itemColour?.trim() || undefined,
             });
           }
         });

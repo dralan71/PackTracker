@@ -4,6 +4,7 @@ export interface Item {
   icon: string;
   quantity: number;
   packed: boolean;
+  colour?: string;
 }
 
 export interface Baggage {

@@ -30,6 +30,7 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
 }) => {
   const [showAddItem, setShowAddItem] = useState(false);
   const [customItemName, setCustomItemName] = useState("");
+  const [itemColour, setItemColour] = useState("");
   const [customItemIcon, setCustomItemIcon] = useState("PiCube");
 
   // Icon mapping function
@@ -38,8 +39,12 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
   };
 
   const addItem = (itemName: string, icon: string) => {
+    const colour = itemColour.trim();
     const existingUnpackedItemIndex = baggage.items.findIndex(
-      (item) => item.name === itemName && !item.packed
+      (item) =>
+        item.name === itemName &&
+        (item.colour || "").trim().toLowerCase() === colour.toLowerCase() &&
+        !item.packed
     );
 
     let updatedBaggage;
@@ -61,6 +66,7 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
         icon,
         quantity: 1,
         packed: false,
+        colour: colour || undefined,
       };
 
       updatedBaggage = {
@@ -77,7 +83,11 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
     
     if (originalItem && !originalItem.packed && updatedItem.packed) {
       const existingPackedItem = baggage.items.find(
-        (item) => item.id !== updatedItem.id && item.name === updatedItem.name && item.packed
+        (item) =>
+          item.id !== updatedItem.id &&
+          item.name === updatedItem.name &&
+          (item.colour || "").trim().toLowerCase() === (updatedItem.colour || "").trim().toLowerCase() &&
+          item.packed
       );
 
       if (existingPackedItem) {
@@ -223,6 +233,15 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
           <>
             {showAddItem && (
               <div className="add-item-section">
+                <label className="item-colour-field">
+                  Colour (optional)
+                  <input
+                    type="text"
+                    value={itemColour}
+                    onChange={(e) => setItemColour(e.target.value)}
+                    placeholder="e.g. Navy blue"
+                  />
+                </label>
                 <div className="default-items">
                   <h5>Quick Add:</h5>
                   <div className="default-items-grid">

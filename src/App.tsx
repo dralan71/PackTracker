@@ -13,6 +13,7 @@ import BaggageCard from "./components/BaggageCard";
 import { DEFAULT_ITEMS } from "./data/defaultItems";
 import { customToast, toastConfig, TOAST_DURATION_MS } from "./ToastContext";
 import Papa from "papaparse";
+import { normalizeColour } from "./colour";
 import "./App.css";
 
 const STORAGE_KEY = "luggage-tracker-data";
@@ -33,7 +34,7 @@ function isValidBaggageArray(data: unknown): data is Baggage[] {
           typeof item.icon === "string" &&
           typeof item.quantity === "number" &&
           typeof item.packed === "boolean" &&
-          (item.colour === undefined || typeof item.colour === "string")
+          (item.colour == null || typeof item.colour === "string")
       )
   );
 }
@@ -55,7 +56,10 @@ function App() {
       if (stored) {
         const parsedData = JSON.parse(stored);
         if (isValidBaggageArray(parsedData)) {
-          setBaggages(parsedData);
+          setBaggages(parsedData.map((bag) => ({
+            ...bag,
+            items: bag.items.map((item) => ({ ...item, colour: normalizeColour(item.colour) })),
+          })));
         } else {
           console.warn("Invalid baggage data found in localStorage. Ignoring.");
         }
@@ -192,7 +196,7 @@ function App() {
           itemName: item.name,
           quantity: item.quantity,
           packed: item.packed,
-          itemColour: item.colour?.trim() || "",
+          itemColour: item.colour ?? "",
         });
       });
     });
@@ -252,7 +256,7 @@ function App() {
               icon: row.itemIcon || "cube",
               quantity: parseInt(row.quantity || "1") || 1,
               packed: row.packed === "true",
-              colour: row.itemColour?.trim() || undefined,
+              colour: normalizeColour(row.itemColour),
             });
           }
         });

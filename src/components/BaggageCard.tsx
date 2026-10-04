@@ -30,7 +30,7 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
 }) => {
   const [showAddItem, setShowAddItem] = useState(false);
   const [customItemName, setCustomItemName] = useState("");
-  const [itemColour, setItemColour] = useState("");
+  const [itemColour, setItemColour] = useState<string | null>(null);
   const [customItemIcon, setCustomItemIcon] = useState("PiCube");
 
   // Icon mapping function
@@ -39,11 +39,11 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
   };
 
   const addItem = (itemName: string, icon: string) => {
-    const colour = itemColour.trim();
+    const colour = itemColour;
     const existingUnpackedItemIndex = baggage.items.findIndex(
       (item) =>
         item.name === itemName &&
-        (item.colour || "").trim().toLowerCase() === colour.toLowerCase() &&
+        item.colour === colour &&
         !item.packed
     );
 
@@ -66,7 +66,7 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
         icon,
         quantity: 1,
         packed: false,
-        colour: colour || undefined,
+        colour,
       };
 
       updatedBaggage = {
@@ -86,7 +86,7 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
         (item) =>
           item.id !== updatedItem.id &&
           item.name === updatedItem.name &&
-          (item.colour || "").trim().toLowerCase() === (updatedItem.colour || "").trim().toLowerCase() &&
+          item.colour === updatedItem.colour &&
           item.packed
       );
 
@@ -233,15 +233,24 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
           <>
             {showAddItem && (
               <div className="add-item-section">
-                <label className="item-colour-field">
-                  Colour (optional)
-                  <input
-                    type="text"
-                    value={itemColour}
-                    onChange={(e) => setItemColour(e.target.value)}
-                    placeholder="e.g. Navy blue"
-                  />
-                </label>
+                <div className="item-colour-field">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={itemColour !== null}
+                      onChange={(e) => setItemColour(e.target.checked ? "#000000" : null)}
+                    />
+                    Use colour
+                  </label>
+                  {itemColour !== null && (
+                    <input
+                      type="color"
+                      aria-label="Colour for new items"
+                      value={itemColour}
+                      onChange={(e) => setItemColour(e.target.value)}
+                    />
+                  )}
+                </div>
                 <div className="default-items">
                   <h5>Quick Add:</h5>
                   <div className="default-items-grid">

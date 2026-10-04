@@ -1,7 +1,7 @@
 import { type Baggage, type BaggageType, type Item } from '../types';
 
 function makeItem(id: string, name: string, icon: string, quantity: number, packed: boolean): Item {
-  return { id, name, icon, quantity, packed };
+  return { id, name, icon, quantity, packed, colour: null };
 }
 
 export function getSeedBaggages(): Baggage[] {

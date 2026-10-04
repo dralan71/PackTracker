@@ -37,14 +37,34 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onUpdate, onDelete }) => {
         {React.createElement(getIconComponent(item.icon))}
         <div className="item-details">
           <span className="item-name">{item.name}</span>
-          <input
-            type="text"
-            className="item-colour-input"
-            aria-label={`Colour for ${item.name}`}
-            placeholder="Add colour..."
-            value={item.colour || ''}
-            onChange={(e) => onUpdate({ ...item, colour: e.target.value || undefined })}
-          />
+          <div className="item-colour-controls">
+            {item.colour === null ? (
+              <button
+                className="item-colour-button"
+                aria-label={`Add colour for ${item.name}`}
+                onClick={() => onUpdate({ ...item, colour: '#000000' })}
+              >
+                Add colour
+              </button>
+            ) : (
+              <>
+                <input
+                  type="color"
+                  className="item-colour-input"
+                  aria-label={`Colour for ${item.name}`}
+                  value={item.colour}
+                  onChange={(e) => onUpdate({ ...item, colour: e.target.value })}
+                />
+                <button
+                  className="item-colour-button"
+                  aria-label={`Clear colour for ${item.name}`}
+                  onClick={() => onUpdate({ ...item, colour: null })}
+                >
+                  Clear
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
       

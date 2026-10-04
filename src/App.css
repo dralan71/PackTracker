@@ -796,20 +796,41 @@
   font-size: 13px;
 }
 
-.item-colour-field input,
-.item-colour-input {
-  min-width: 0;
-  padding: 6px 8px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-family: var(--font-body);
-  font-size: 13px;
-  background: var(--surface);
-  color: var(--text);
+.item-colour-field label,
+.item-colour-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.item-colour-field input:focus,
-.item-colour-input:focus {
+.item-colour-field input[type="color"],
+.item-colour-input {
+  width: 36px;
+  height: 28px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.item-colour-button {
+  padding: 2px 4px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.item-colour-button:hover {
+  color: var(--accent);
+}
+
+.item-colour-field input:focus-visible,
+.item-colour-input:focus-visible,
+.item-colour-button:focus-visible {
   outline: 2px solid var(--warm);
   outline-offset: 1px;
 }
@@ -823,9 +844,4 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-}
-
-.item-colour-input {
-  width: 120px;
-  max-width: 100%;
 }

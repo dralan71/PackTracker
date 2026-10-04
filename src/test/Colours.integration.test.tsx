@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, within, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../App'
 
@@ -23,9 +23,23 @@ function itemCards() {
   return Array.from(document.querySelectorAll<HTMLElement>('.item-card'))
 }
 
-// Native colour selection emits an input event; jsdom has no OS picker.
-function selectColour(label: string, hex: string) {
-  fireEvent.input(screen.getByLabelText(label), { target: { value: hex } })
+async function pickPreset(user: ReturnType<typeof userEvent.setup>, triggerName: string, presetName: string) {
+  await user.click(screen.getByRole('button', { name: triggerName }))
+  await user.click(screen.getByRole('option', { name: presetName }))
+}
+
+async function pickCustomHex(user: ReturnType<typeof userEvent.setup>, triggerName: string, hex: string) {
+  await user.click(screen.getByRole('button', { name: triggerName }))
+  const subject = triggerName.replace(/^(Add )?colour for /i, '')
+  const input = screen.getByLabelText(`Custom hex for ${subject}`)
+  await user.clear(input)
+  await user.type(input, hex)
+  await user.keyboard('{Enter}')
+}
+
+async function clearColour(user: ReturnType<typeof userEvent.setup>, triggerName: string) {
+  await user.click(screen.getByRole('button', { name: triggerName }))
+  await user.click(screen.getByRole('option', { name: 'No colour' }))
 }
 
 function readBlob(blob: Blob): Promise<string> {
@@ -43,8 +57,7 @@ describe('Colour integration', () => {
     render(<App />)
     await user.click(screen.getByRole('button', { name: 'CARRY ON' }))
     await user.click(document.querySelector('.add-item-btn') as HTMLButtonElement)
-    await user.click(screen.getByLabelText('Use colour'))
-    selectColour('Colour for new items', '#0000ff')
+    await pickPreset(user, 'Add colour for new items', 'Blue')
     await user.click(screen.getByRole('button', { name: /^T-Shirt$/ }))
     await user.click(screen.getByRole('button', { name: /^T-Shirt$/ }))
     expect(itemCards()).toHaveLength(1)
@@ -57,15 +70,15 @@ describe('Colour integration', () => {
     expect(itemCards()).toHaveLength(1)
     expect(within(itemCards()[0]).getByText('3')).toBeInTheDocument()
 
-    selectColour('Colour for new items', '#ff0000')
+    await pickPreset(user, 'Colour for new items', 'Red')
     await user.click(screen.getByRole('button', { name: /^T-Shirt$/ }))
     await user.click(itemCards()[1].querySelector('.pack-btn') as HTMLButtonElement)
-    await user.click(screen.getByLabelText('Use colour'))
+    await clearColour(user, 'Colour for new items')
     await user.click(screen.getByRole('button', { name: /^T-Shirt$/ }))
     await user.click(itemCards()[2].querySelector('.pack-btn') as HTMLButtonElement)
     expect(itemCards()).toHaveLength(3)
-    expect(within(itemCards()[0]).getByLabelText('Colour for T-Shirt')).toHaveValue('#0000ff')
-    expect(within(itemCards()[1]).getByLabelText('Colour for T-Shirt')).toHaveValue('#ff0000')
+    expect(within(itemCards()[0]).getByRole('button', { name: 'Colour for T-Shirt' })).toHaveAttribute('data-colour', '#4a7ab5')
+    expect(within(itemCards()[1]).getByRole('button', { name: 'Colour for T-Shirt' })).toHaveAttribute('data-colour', '#b33a3a')
     expect(within(itemCards()[2]).getByRole('button', { name: 'Add colour for T-Shirt' })).toBeInTheDocument()
     expect(screen.getByText('3/3 packed')).toBeInTheDocument()
   })
@@ -75,26 +88,24 @@ describe('Colour integration', () => {
     const app = render(<App />)
     await user.click(screen.getByRole('button', { name: 'CARRY ON' }))
     await user.click(document.querySelector('.add-item-btn') as HTMLButtonElement)
-    await user.click(screen.getByLabelText('Use colour'))
-    selectColour('Colour for new items', '#123456')
+    await pickCustomHex(user, 'Add colour for new items', '#123456')
     await user.type(screen.getByPlaceholderText('Item name...'), 'Scarf')
     await user.click(screen.getByRole('button', { name: /^Add$/ }))
-    expect(screen.getByLabelText('Colour for Scarf')).toHaveValue('#123456')
+    expect(screen.getByRole('button', { name: 'Colour for Scarf' })).toHaveAttribute('data-colour', '#123456')
     app.unmount()
 
     const reloaded = render(<App />)
-    expect(screen.getByLabelText('Colour for Scarf')).toHaveValue('#123456')
-    selectColour('Colour for Scarf', '#abcdef')
-    expect(screen.getByLabelText('Colour for Scarf')).toHaveValue('#abcdef')
-    await user.click(screen.getByRole('button', { name: 'Clear colour for Scarf' }))
+    expect(screen.getByRole('button', { name: 'Colour for Scarf' })).toHaveAttribute('data-colour', '#123456')
+    await pickCustomHex(user, 'Colour for Scarf', '#abcdef')
+    expect(screen.getByRole('button', { name: 'Colour for Scarf' })).toHaveAttribute('data-colour', '#abcdef')
+    await clearColour(user, 'Colour for Scarf')
     reloaded.unmount()
 
     render(<App />)
     expect(screen.getByRole('button', { name: 'Add colour for Scarf' })).toBeInTheDocument()
     expect(JSON.parse(stored.get(STORAGE_KEY)!)[0].items[0].colour).toBeNull()
-    await user.click(screen.getByRole('button', { name: 'Add colour for Scarf' }))
-    selectColour('Colour for Scarf', '#fedcba')
-    expect(screen.getByLabelText('Colour for Scarf')).toHaveValue('#fedcba')
+    await pickCustomHex(user, 'Add colour for Scarf', '#fedcba')
+    expect(screen.getByRole('button', { name: 'Colour for Scarf' })).toHaveAttribute('data-colour', '#fedcba')
   })
 
   it('round-trips hex colours and no-colour items through the actual CSV download and upload', async () => {
@@ -111,10 +122,12 @@ describe('Colour integration', () => {
     const csv = await readBlob(download.mock.calls[0][0] as Blob)
     expect(csv).toContain('itemColour')
     expect(csv).toContain('#123456')
-    await user.click(screen.getByRole('button', { name: 'Clear colour for Scarf' }))
+    await clearColour(user, 'Colour for Scarf')
     await user.upload(document.querySelector('input[type="file"]') as HTMLInputElement,
       new File([csv], 'colours.csv', { type: 'text/csv' }))
-    await waitFor(() => expect(screen.getByLabelText('Colour for Scarf')).toHaveValue('#123456'))
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Colour for Scarf' })).toHaveAttribute('data-colour', '#123456')
+    )
     expect(screen.getByRole('button', { name: 'Add colour for Socks' })).toBeInTheDocument()
     expect(screen.getByText('1/2 packed')).toBeInTheDocument()
     const saved = JSON.parse(stored.get(STORAGE_KEY)!)
@@ -137,7 +150,7 @@ describe('Colour integration', () => {
 
     const csv = 'baggageId,baggageType,itemName,quantity,packed,itemColour\nbag,carry-on,Scarf,1,false, #ABCDEF \nbag,carry-on,Hat,1,false,\nbag,carry-on,Gloves,1,false,red'
     await user.upload(fileInput, new File([csv], 'hex.csv', { type: 'text/csv' }))
-    expect(await screen.findByLabelText('Colour for Scarf')).toHaveValue('#abcdef')
+    expect(await screen.findByRole('button', { name: 'Colour for Scarf' })).toHaveAttribute('data-colour', '#abcdef')
     expect(screen.getByRole('button', { name: 'Add colour for Hat' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Add colour for Gloves' })).toBeInTheDocument()
     expect(JSON.parse(stored.get(STORAGE_KEY)!)[0].items.map((item: { colour: string | null }) => item.colour))

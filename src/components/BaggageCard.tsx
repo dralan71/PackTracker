@@ -4,11 +4,13 @@ import {
   PiPlusCircle,
   PiCheckCircle,
   PiCheckCircleFill,
+  PiPalette,
 } from "react-icons/pi";
 import { FaChevronCircleUp, FaChevronCircleRight } from "react-icons/fa";
 import { iconMap } from "../iconMap";
 import { customToast } from "../ToastContext";
 import { type Baggage, type Item, type DefaultItem } from "../types";
+import ColourPicker from "./ColourPicker";
 import ItemCard from "./ItemCard";
 
 interface BaggageCardProps {
@@ -33,7 +35,6 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
   const [itemColour, setItemColour] = useState<string | null>(null);
   const [customItemIcon, setCustomItemIcon] = useState("PiCube");
 
-  // Icon mapping function
   const getIconComponent = (iconName: string) => {
     return iconMap[iconName] || iconMap["PiCube"];
   };
@@ -234,22 +235,23 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
             {showAddItem && (
               <div className="add-item-section">
                 <div className="item-colour-field">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={itemColour !== null}
-                      onChange={(e) => setItemColour(e.target.checked ? "#000000" : null)}
-                    />
-                    Use colour
-                  </label>
-                  {itemColour !== null && (
-                    <input
-                      type="color"
-                      aria-label="Colour for new items"
-                      value={itemColour}
-                      onChange={(e) => setItemColour(e.target.value)}
-                    />
-                  )}
+                  <span className="item-colour-field-label">Colour</span>
+                  <ColourPicker
+                    colour={itemColour}
+                    onChange={setItemColour}
+                    label="new items"
+                  >
+                    <span className="item-icon-wrap">
+                      <PiPalette />
+                      {itemColour !== null && (
+                        <span
+                          className="item-colour-dot"
+                          style={{ backgroundColor: itemColour }}
+                          aria-hidden="true"
+                        />
+                      )}
+                    </span>
+                  </ColourPicker>
                 </div>
                 <div className="default-items">
                   <h5>Quick Add:</h5>
@@ -260,7 +262,16 @@ const BaggageCard: React.FC<BaggageCardProps> = ({
                         onClick={() => addItem(item.name, item.icon)}
                         className="default-item-btn"
                       >
-                        {React.createElement(getIconComponent(item.icon))}
+                        <span className="item-icon-wrap">
+                          {React.createElement(getIconComponent(item.icon))}
+                          {itemColour !== null && (
+                            <span
+                              className="item-colour-dot"
+                              style={{ backgroundColor: itemColour }}
+                              aria-hidden="true"
+                            />
+                          )}
+                        </span>
                         <span>{item.name}</span>
                       </button>
                     ))}

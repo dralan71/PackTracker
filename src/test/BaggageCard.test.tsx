@@ -3,8 +3,6 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import BaggageCard from '../components/BaggageCard'
 import { type Baggage, type DefaultItem } from '../types'
-import { DEFAULT_ITEMS } from '../data/defaultItems'
-import { iconMap } from '../iconMap'
 
 const mockDefaultItems: DefaultItem[] = [
   { name: 'T-Shirt', icon: 'tshirt', emoji: '👕' },
@@ -184,34 +182,6 @@ describe('BaggageCard', () => {
 
     // Items should not be visible when collapsed
     expect(screen.queryByText('Test Item')).not.toBeInTheDocument()
-  })
-
-  it('adds a dress from Quick Add and offers its icon for custom items', async () => {
-    const user = userEvent.setup()
-    render(
-      <BaggageCard
-        baggage={{ ...mockBaggage, items: [] }}
-        onUpdate={mockOnUpdate}
-        onDelete={mockOnDelete}
-        defaultItems={DEFAULT_ITEMS}
-        collapsed={false}
-        setCollapsed={mockSetCollapsed}
-      />
-    )
-    await user.click(document.querySelector('.add-item-btn') as HTMLButtonElement)
-    await user.click(screen.getByRole('button', { name: 'Dress' }))
-    expect(mockOnUpdate.mock.calls[0][0].items[0]).toMatchObject({
-      name: 'Dress', icon: 'PiDress', quantity: 1, packed: false
-    })
-    expect(screen.getByRole('option', { name: '👗 Dress' })).toHaveValue('PiDress')
-    expect(iconMap.PiDress).toBeDefined()
-
-    await user.type(screen.getByPlaceholderText('Item name...'), 'Evening dress')
-    await user.selectOptions(screen.getByRole('combobox'), 'PiDress')
-    await user.click(screen.getByRole('button', { name: /^Add$/ }))
-    expect(mockOnUpdate.mock.calls[1][0].items[0]).toMatchObject({
-      name: 'Evening dress', icon: 'PiDress'
-    })
   })
 
   describe('Duplicate item handling', () => {

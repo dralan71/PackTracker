@@ -30,8 +30,9 @@ async function pickPreset(user: ReturnType<typeof userEvent.setup>, triggerName:
 
 async function pickCustomHex(user: ReturnType<typeof userEvent.setup>, triggerName: string, hex: string) {
   await user.click(screen.getByRole('button', { name: triggerName }))
+  await user.click(screen.getByRole('button', { name: 'Custom colour' }))
   const subject = triggerName.replace(/^(Add )?colour for /i, '')
-  const input = screen.getByLabelText(`Custom hex for ${subject}`)
+  const input = screen.getByLabelText(`Custom colour for ${subject}`)
   await user.clear(input)
   await user.type(input, hex)
   await user.keyboard('{Enter}')
